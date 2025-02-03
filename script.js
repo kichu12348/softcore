@@ -114,6 +114,24 @@ audio.addEventListener('timeupdate', () => {
     }
 });
 
+const handleTogle=(e)=>{
+    e?.preventDefault();
+    if (!isPlaying) {
+        playButton.click();
+    } else {
+        playButton.click();
+    }
+}
+
+
+window.addEventListener('keydown', (e) => {
+    e.preventDefault();
+    if (e.key === ' ') handleTogle(e);
+});
+
+
+document.body.addEventListener('click', handleTogle);
+
 // Update reset logic
 audio.addEventListener('ended', () => {
     playButton.textContent = 'Play';
