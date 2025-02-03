@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#000022" />
+    <title>Softcore</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"/>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <svg style="display: none">
+      <defs>
+        <filter id="glitch">
+          <feColorMatrix
+            type="matrix"
+            values="1 0 0 0 0
+                  0 0 0 0 0
+                  0 0 1 0 0
+                  0 0 0 1 0"
+          />
+        </filter>
+      </defs>
+    </svg>
+    <div class="container">
+      <button id="playButton">Play</button>
+      <div id="lyricsContainer"></div>
+      <audio id="audio" src="softcore.mp3"></audio>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
