@@ -130,8 +130,6 @@ window.addEventListener('keydown', (e) => {
 });
 
 
-document.body.addEventListener('click', handleTogle);
-
 // Update reset logic
 audio.addEventListener('ended', () => {
     playButton.textContent = 'Play';
