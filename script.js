@@ -42,11 +42,75 @@ interlude.innerHTML = `
 `;
 lyricsContainer.appendChild(interlude);
 
+let audioContext;
+let analyser;
+let dataArray;
+
+function initializeAudioContext() {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    const source = audioContext.createMediaElementSource(audio);
+    
+    // Increase frequency resolution
+    analyser.fftSize = 64;
+    analyser.minDecibels = -90;
+    analyser.maxDecibels = -10;
+    analyser.smoothingTimeConstant = 0.85;
+    
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+    updateVisualizer();
+}
+
+function updateVisualizer() {
+    if (!analyser) return;
+    
+    analyser.getByteFrequencyData(dataArray);
+    const bars = document.querySelectorAll('.visualizer .bar');
+    
+    // Enhanced beat detection and visualization
+    for (let i = 0; i < bars.length; i++) {
+        // Use different frequency ranges for each bar
+        const start = Math.floor(i * 4);
+        const end = Math.floor(start + 4);
+        
+        // Get average value for the frequency range
+        let sum = 0;
+        for (let j = start; j < end; j++) {
+            sum += dataArray[j];
+        }
+        const average = sum / 4;
+        
+        // Add some exponential scaling for more dramatic effect
+        const scale = Math.pow(average / 255, 1.5);
+        const height = Math.max(5, scale * 150); // Minimum height of 5px
+        
+        bars[i].style.height = `${height}px`;
+        bars[i].style.opacity = 0.7 + scale * 0.3;
+        
+        // Add transform scale for "punch" effect
+        const scaleY = 1 + scale * 0.5;
+        bars[i].style.transform = `scaleY(${scaleY})`;
+    }
+    
+    requestAnimationFrame(updateVisualizer);
+}
+
 playButton.addEventListener('click', () => {
+    if (!audioContext) {
+        initializeAudioContext();
+    }
+    
     if (!isPlaying) {
+        audioContext.resume();
         audio.play();
         playButton.textContent = 'Pause';
         isPlaying = true;
+        
+        // Start visualizer animation
+        updateVisualizer();
         
         // Reset volume if we're not at the fade out point
         if (audio.currentTime < 70) {
@@ -76,20 +140,8 @@ audio.addEventListener('timeupdate', () => {
     if (currentLine < lyricsData.length) {
         const currentLyric = lyricsData[currentLine];
 
-        // Handle interlude gap with cassette animation
-        if (currentTime > 32.21 && currentTime < 45.95) {
-            document.querySelectorAll('.line').forEach(line => {
-                line.classList.remove('active');
-                line.classList.add('fade-out');
-            });
-            interlude.classList.add('active');
-        } else {
-            interlude.classList.remove('active');
-        }
-
-        // Show new line when it's time
+        // Remove the interlude-specific visualizer logic and just handle lyrics
         if (currentTime >= currentLyric.time) {
-            // Fade out all previous lines immediately
             document.querySelectorAll('.line').forEach((line, index) => {
                 if (index < currentLine) {
                     line.classList.remove('active');
