@@ -1,5 +1,4 @@
 const audio = document.getElementById('audio');
-const playButton = document.getElementById('playButton');
 const lyricsContainer = document.getElementById('lyricsContainer');
 
 const lyricsData = [
@@ -98,7 +97,8 @@ function updateVisualizer() {
     requestAnimationFrame(updateVisualizer);
 }
 
-playButton.addEventListener('click', () => {
+
+const handlePlayPause = () => {
     if (!audioContext) {
         initializeAudioContext();
     }
@@ -106,7 +106,6 @@ playButton.addEventListener('click', () => {
     if (!isPlaying) {
         audioContext.resume();
         audio.play();
-        playButton.textContent = 'Pause';
         isPlaying = true;
         
         // Start visualizer animation
@@ -122,10 +121,12 @@ playButton.addEventListener('click', () => {
         }
     } else {
         audio.pause();
-        playButton.textContent = 'Play';
         isPlaying = false;
     }
-});
+}
+
+document.body.addEventListener('click', handlePlayPause);
+document.body.addEventListener('touchstart', handlePlayPause);
 
 // Update timeupdate event handler for smoother transitions
 audio.addEventListener('timeupdate', () => {
@@ -168,11 +169,7 @@ audio.addEventListener('timeupdate', () => {
 
 const handleTogle=(e)=>{
     e?.preventDefault();
-    if (!isPlaying) {
-        playButton.click();
-    } else {
-        playButton.click();
-    }
+    handlePlayPause();
 }
 
 
@@ -184,7 +181,6 @@ window.addEventListener('keydown', (e) => {
 
 // Update reset logic
 audio.addEventListener('ended', () => {
-    playButton.textContent = 'Play';
     isPlaying = false;
     currentLine = 0;
     document.querySelectorAll('.line').forEach(line => {
