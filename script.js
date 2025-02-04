@@ -126,7 +126,6 @@ const handlePlayPause = () => {
 }
 
 document.body.addEventListener('click', handlePlayPause);
-document.body.addEventListener('touchstart', handlePlayPause);
 
 // Update timeupdate event handler for smoother transitions
 audio.addEventListener('timeupdate', () => {
