@@ -19,7 +19,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(125deg, #000022, #000000);
+  background: linear-gradient(180deg, #000022, #000000);
   position: relative;
 }
 
