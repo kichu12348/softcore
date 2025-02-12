@@ -29,17 +29,28 @@ lyricsData.forEach((lineObj, index) => {
     lyricsContainer.appendChild(lineEl);
 });
 
-// Replace interlude element with visualizer
+let totalBars = 64;
 const interlude = document.createElement('div');
 interlude.className = 'visualizer';
-interlude.innerHTML = `
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-`;
-lyricsContainer.appendChild(interlude);
+
+
+function createBars(startIndex = 0, chunkSize = 10) {
+    const endIndex = Math.min(startIndex + chunkSize, totalBars);
+    
+    for (let i = startIndex; i < endIndex; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        interlude.appendChild(bar);
+    }
+    
+    if (endIndex < totalBars) {
+        requestAnimationFrame(() => createBars(endIndex, chunkSize));
+    } else {
+        lyricsContainer.appendChild(interlude);
+    }
+}
+
+createBars();
 
 let audioContext;
 let analyser;
@@ -69,34 +80,34 @@ function updateVisualizer() {
     analyser.getByteFrequencyData(dataArray);
     const bars = document.querySelectorAll('.visualizer .bar');
     
-    // Enhanced beat detection and visualization
-    for (let i = 0; i < bars.length; i++) {
-        // Use different frequency ranges for each bar
-        const start = Math.floor(i * 4);
-        const end = Math.floor(start + 4);
+    const time = Date.now() / 1000;
+    const baseHeight = 60;
+    
+    bars.forEach((bar, index) => {
+        const dataIndex = Math.floor(index * dataArray.length / bars.length);
+        const frequency = dataArray[dataIndex];
         
-        // Get average value for the frequency range
-        let sum = 0;
-        for (let j = start; j < end; j++) {
-            sum += dataArray[j];
-        }
-        const average = sum / 4;
+        // Create dreamy wave pattern with multiple sine waves
+        const wave1 = Math.sin(time * 1.5 + index * 0.15) * 0.5 + 0.5;
+        const wave2 = Math.sin(time * 0.8 + index * 0.2) * 0.3 + 0.5;
+        const waveHeight = baseHeight * (wave1 * 0.7 + wave2 * 0.3);
         
-        // Add some exponential scaling for more dramatic effect
-        const scale = Math.pow(average / 255, 1.5);
-        const height = Math.max(5, scale * 150); // Minimum height of 5px
+        const frequencyFactor = frequency / 255;
+        const height = waveHeight + (frequencyFactor * 120);
         
-        bars[i].style.height = `${height}px`;
-        bars[i].style.opacity = 0.7 + scale * 0.3;
+        // Smooth height transition
+        bar.style.height = `${height}px`;
+        bar.style.transform = `scaleY(${1 + frequencyFactor * 0.3})`;
         
-        // Add transform scale for "punch" effect
-        const scaleY = 1 + scale * 0.5;
-        bars[i].style.transform = `scaleY(${scaleY})`;
-    }
+        // Dreamy color variation
+        const hue = 240 + (frequencyFactor * 40);
+        const saturation = 70 + (frequencyFactor * 30);
+        const lightness = 40 + (frequencyFactor * 30);
+        bar.style.backgroundColor = `hsla(${hue}, ${saturation}%, ${lightness}%, ${0.7 + frequencyFactor * 0.3})`;
+    });
     
     requestAnimationFrame(updateVisualizer);
 }
-
 
 const handlePlayPause = () => {
     if (!audioContext) {

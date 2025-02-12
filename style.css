@@ -100,18 +100,18 @@ body {
 /* Audio Visualizer Styling */
 .visualizer {
     position: fixed;
-    top: 0;
+    bottom: 0;
     left: 0;
     width: 100%;
-    height: 100vh;
+    height: 250px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
+    align-items: flex-end;
     z-index: 0;
     pointer-events: none;
-    opacity: 0.8;
+    padding: 0;
+    opacity: 0.85;
     mix-blend-mode: screen;
+    filter: blur(1px);
 }
 
 .visualizer.active {
@@ -119,27 +119,52 @@ body {
 }
 
 .bar {
-  width: 30px;
-  min-height: 5px;
-  background: linear-gradient(to top, 
-      rgba(74, 0, 224, 0.7),
-      rgba(142, 45, 226, 0.8)
-  );
-  border-radius: 15px;
-  transition: transform 0.05s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 30px rgba(74, 0, 224, 0.5);
-  will-change: transform, height, opacity;
+    flex: 1;
+    min-width: 3px;
+    height: 50px;
+    background: linear-gradient(to top, 
+        rgba(74, 0, 224, 0.2),
+        rgba(142, 45, 226, 0.6) 40%,
+        rgba(255, 255, 255, 0.9)
+    );
+    transition: all 0.15s ease;
+    will-change: height, transform, opacity;
+    border-radius: 4px;
+    box-shadow: 
+        0 0 15px rgba(74, 0, 224, 0.5),
+        0 0 30px rgba(142, 45, 226, 0.3),
+        0 0 45px rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(3px);
 }
 
 .visualizer.active .bar {
-  animation: pulse 1s ease-in-out infinite;
+    animation: dreamyGlow 2s ease-in-out infinite alternate;
 }
 
-.visualizer .bar:nth-child(1) { animation-delay: 0.1s; }
-.visualizer .bar:nth-child(2) { animation-delay: 0.15s; }
-.visualizer .bar:nth-child(3) { animation-delay: 0.2s; }
-.visualizer .bar:nth-child(4) { animation-delay: 0.25s; }
-.visualizer .bar:nth-child(5) { animation-delay: 0.3s; }
+@keyframes dreamyGlow {
+    0% {
+        box-shadow: 
+            0 0 15px rgba(74, 0, 224, 0.5),
+            0 0 30px rgba(142, 45, 226, 0.3);
+        filter: brightness(0.8);
+    }
+    100% {
+        box-shadow: 
+            0 0 25px rgba(74, 0, 224, 0.7),
+            0 0 50px rgba(142, 45, 226, 0.5),
+            0 0 75px rgba(255, 255, 255, 0.3);
+        filter: brightness(1.2);
+    }
+}
+
+/* Remove the old bar-specific animations */
+.visualizer .bar:nth-child(1),
+.visualizer .bar:nth-child(2),
+.visualizer .bar:nth-child(3),
+.visualizer .bar:nth-child(4),
+.visualizer .bar:nth-child(5) {
+  animation-delay: 0s;
+}
 
 @keyframes pulse {
   0%, 100% { height: 40px; opacity: 0.5; }
@@ -221,12 +246,11 @@ body {
   }
 
   .visualizer {
-    width: 200px;
-    height: 80px;
+    height: 150px;
   }
 
   .bar {
-    width: 8px;
+    min-width: 1px;
   }
 
   #lyricsContainer {
@@ -240,8 +264,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    gap: 5px;
-    height: 60px;
+    height: 30px;
     margin: 20px 0;
 }
 
